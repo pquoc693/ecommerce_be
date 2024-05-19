@@ -148,6 +148,10 @@ class AccessService {
     //   };
     // }
   };
+
+  static logout = async ({ keyStore }) => {
+    return await KeyTokenService.removeKeyById({ id: keyStore._id });
+  };
 }
 
 module.exports = AccessService;
