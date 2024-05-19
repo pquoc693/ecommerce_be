@@ -6,10 +6,6 @@ const { asyncHandler } = require("../../auth/checkAuth");
 const router = express.Router();
 
 router.post("/shop/signup", asyncHandler(accessController.signUp));
-// router.get("/", (req, res, next) => {
-//   return res.status(200).json({
-//     message: "Welcome"
-//   });
-// });
+router.post("/shop/login", asyncHandler(accessController.login));
 
 module.exports = router;

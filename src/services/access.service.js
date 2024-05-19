@@ -8,7 +8,8 @@ const { createTokenPair } = require("../auth/authUtils");
 const { getInfoData } = require("../utils");
 const {
   BadRequestError,
-  ConflictRequestError
+  ConflictRequestError,
+  AuthFailureError
 } = require("../core/error.response");
 const { findByEmail } = require("./shop.service");
 
@@ -19,16 +20,43 @@ const RoleShop = {
   ADMIN: "ADMIN"
 };
 class AccessService {
-  // static login = async ({ email, password, refreshToken = null }) => {
-  //   // 1 check email exists
-  //   const foundShop = await findByEmail({ email });
-  //   if(!foundShop){
-  //     throw new BadRequestError('Shop not registered');
-  //   }
-  //   // 2 check password matches
-  //   const match = bcrypt.compare(password, foundShop.password)
-  //   if(!match)
-  // };
+  static login = async ({ email, password, refreshToken = null }) => {
+    // 1 check email exists
+    const foundShop = await findByEmail({ email });
+    if (!foundShop) {
+      throw new BadRequestError("Shop not registered");
+    }
+    // 2 check password matches
+    const match = bcrypt.compare(password, foundShop.password);
+    if (!match) {
+      throw new AuthFailureError("Authentication error");
+    }
+    // 3 create AT and RT
+    const publicKey = crypto.randomBytes(64).toString("hex");
+    const privateKey = crypto.randomBytes(64).toString("hex");
+
+    const tokens = await createTokenPair(
+      { userId: foundShop._id, email },
+      publicKey,
+      privateKey
+    );
+
+    await KeyTokenService.createKeyToken({
+      // save collection keyStore
+      refreshToken: tokens.refreshToken,
+      userId: foundShop._id,
+      publicKey,
+      privateKey
+    });
+
+    return {
+      shop: getInfoData({
+        fileds: ["_id", "email", "name"],
+        object: foundShop
+      }),
+      tokens
+    };
+  };
 
   static signUp = async ({ name, email, password }) => {
     // try {

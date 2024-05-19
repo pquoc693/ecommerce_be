@@ -1,5 +1,6 @@
 "use strict";
 
+const { ReasonPhrases, StatusCodes } = require("./httpStatusCode");
 const StatusCode = {
   OK: 200,
   CREATED: 201
@@ -48,5 +49,6 @@ class CREATED extends SuccessResponse {
 
 module.exports = {
   OK,
-  CREATED
+  CREATED,
+  SuccessResponse
 };

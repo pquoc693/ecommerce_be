@@ -1,11 +1,10 @@
 @url_dev = http://localhost:3055/v1/api/
 
-POST {{url_dev}}shop/signup
+POST {{url_dev}}shop/login
 Content-Type: application/json
 x-api-key: 740458a0419b1273e3175b3b089997192c5bfbd6b17197a60a6af82fc6891576366216f420b3f5d0319ce0cce35797ea8a4a67d00e7e8d216b23d0ee25840b57
 
 {
-  "name": "findOne",
   "email": "findOne2@gmail.com",
   "password": "132"
 }
