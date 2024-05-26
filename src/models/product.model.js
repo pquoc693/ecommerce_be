@@ -1,6 +1,7 @@
 "use strict";
 
 const { model, Schema } = require("mongoose");
+const slugify = require("slugify");
 
 const DOCUMENT_NAME = "Product";
 const COLLECTION_NAME = "Products";
@@ -18,6 +19,9 @@ const productSchema = new Schema(
     product_description: {
       type: String
     },
+    product_slug: {
+      type: String
+    },
     product_price: {
       type: Number,
       required: true
@@ -33,11 +37,36 @@ const productSchema = new Schema(
     },
     product_shop: {
       type: Schema.Types.ObjectId,
-      ref: "Shop"
+      ref: "shop"
     },
     product_attributes: {
       type: Schema.Types.Mixed,
       required: true
+    },
+    // more
+    product_ratingsAvg: {
+      type: Number,
+      default: 4.5,
+      min: [1.0, "Rating must be at least 1.0"],
+      max: [5.0, "Rating must be at most 5.0"],
+      set: (v) => Math.round(v * 10) / 10 // round to 1 decimal
+    }, // average rating
+
+    product_variations: {
+      type: Array,
+      default: []
+    },
+    isDraft: {
+      type: Boolean,
+      default: true,
+      index: true,
+      select: false
+    },
+    isPublished: {
+      type: Boolean,
+      default: false,
+      index: true,
+      select: false // khi select * from ko lấy trường này
     }
   },
   {
@@ -45,6 +74,14 @@ const productSchema = new Schema(
     timestamps: true
   }
 );
+// create index for search
+productSchema.index({ product_name: "text", product_description: "text" });
+
+// Document middleware: RUN BEFORE .save() and .create()
+productSchema.pre("save", function (next) {
+  this.product_slug = slugify(this.product_name, { lower: true });
+  next();
+});
 
 // define the product type = clothing
 
@@ -62,7 +99,7 @@ const clothingSchema = new Schema(
     },
     product_shop: {
       type: Schema.Types.ObjectId,
-      ref: "Shop"
+      ref: "shop"
     }
   },
   {
@@ -87,7 +124,7 @@ const electronicSchema = new Schema(
     },
     product_shop: {
       type: Schema.Types.ObjectId,
-      ref: "Shop"
+      ref: "shop"
     }
   },
   {
@@ -112,7 +149,7 @@ const furnitureSchema = new Schema(
     },
     product_shop: {
       type: Schema.Types.ObjectId,
-      ref: "Shop"
+      ref: "shop"
     }
   },
   {
