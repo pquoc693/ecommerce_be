@@ -10,6 +10,9 @@ router.get(
   "/search/:keySearch",
   asyncHandler(productController.searchProductsByUser)
 );
+router.get("/all", asyncHandler(productController.findAllProducts));
+router.get("/:product_id", asyncHandler(productController.findProduct));
+
 // authentication
 router.use(authenticationV2);
 //
@@ -31,5 +34,6 @@ router.get(
   "/publishes/all",
   asyncHandler(productController.getAllPublishForShop)
 );
+router.get("/drafts/all", asyncHandler(productController.getAllDraftsForShop));
 
 module.exports = router;
