@@ -14,8 +14,10 @@ const {
   unPublishProductByShop,
   searchProductByUser,
   findAllProducts,
-  findProduct
+  findProduct,
+  updateProductById
 } = require("../models/repositories/product.repo");
+const { removeUndefinedObject, updateNestedObjectParser } = require("../utils");
 
 // define factory class to create product
 class ProductFactory {
@@ -33,6 +35,16 @@ class ProductFactory {
     }
 
     return new productClass(payload).createProduct();
+  }
+
+  static async updateProduct(type, productId, payload) {
+    const productClass = ProductFactory.productRegistry[type];
+
+    if (!productClass) {
+      throw new BadRequestError(`Invalid product type ${type}`);
+    }
+
+    return new productClass(payload).updateProduct(productId);
   }
 
   // PUT //
@@ -78,6 +90,12 @@ class ProductFactory {
     });
   }
 
+  static async searchProduct({ keySearch }) {
+    return await searchProductByUser({
+      keySearch
+    });
+  }
+
   // end query
 }
 
@@ -106,6 +124,18 @@ class Product {
   //   create new product
   async createProduct(product_id) {
     return await ProductModel.create({ ...this, _id: product_id });
+  }
+
+  // update product
+  async updateProduct(productId, bodyUpdate) {
+    // return await ProductModel.findByIdAndUpdate(productId, bodyUpdate, {
+    //   new: true
+    // });
+    return await updateProductById({
+      model: ProductModel,
+      product_id: productId,
+      bodyUpdate
+    });
   }
 }
 
@@ -174,6 +204,26 @@ class Furniture extends Product {
     }
 
     return newProduct;
+  }
+
+  async updateProduct(productId) {
+    const objectParam = removeUndefinedObject(this);
+    if (objectParam.product_attributes) {
+      // update child
+      // await ClothingModel.findByIdAndUpdate(productId, objectParam, {
+      //   new: true
+      // });
+      await updateProductById({
+        model: ClothingModel,
+        product_id: productId,
+        bodyUpdate: updateNestedObjectParser(objectParam.product_attributes)
+      });
+    }
+    const updateProduct = await super.updateProduct(
+      productId,
+      updateNestedObjectParser(objectParam)
+    );
+    return updateProduct;
   }
 }
 

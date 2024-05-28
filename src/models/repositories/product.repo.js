@@ -82,6 +82,16 @@ const unPublishProductByShop = async ({ product_shop, product_id }) => {
   return modifiedCount;
 };
 
+const updateProductById = async ({
+  product_id,
+  bodyUpdate,
+  model,
+  isNew = true
+}) => {
+  console.log("product_id", product_id);
+  return await model.findByIdAndUpdate(product_id, bodyUpdate, { new: isNew });
+};
+
 const queryProduct = async ({ query, limit, skip }) => {
   return await ProductModel.find(query)
     .populate("product_shop", "name email -_id") // lấy name email, bỏ id
@@ -99,5 +109,6 @@ module.exports = {
   unPublishProductByShop,
   searchProductByUser,
   findAllProducts,
-  findProduct
+  findProduct,
+  updateProductById
 };
