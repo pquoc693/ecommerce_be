@@ -23,6 +23,11 @@ const discountSchema = new Schema(
       type: Number,
       required: true
     },
+    discount_max_value: {
+      // nope
+      type: Number
+      // required: true
+    },
     discount_code: {
       type: String,
       required: true
@@ -40,15 +45,20 @@ const discountSchema = new Schema(
       type: Number,
       required: true
     },
-    discount_users_count: {
+    discount_uses_count: {
       // số lượng discount đã dùng
       type: Number,
       required: true
     },
-    discount_max_per_used: {
-      // số lượng discount mà 1 người được sử dụng
+    discount_users_used: {
       type: Array,
       default: []
+    },
+    discount_max_uses_per_user: {
+      // số lượng discount mà 1 người được sử dụng
+      // type: Array,
+      type: Number
+      // default: []
     },
     discount_min_order_value: {
       type: Number,
@@ -81,5 +91,5 @@ const discountSchema = new Schema(
 
 //Export the model
 module.exports = {
-  inventory: model(DOCUMENT_NAME, discountSchema)
+  discount: model(DOCUMENT_NAME, discountSchema)
 };
