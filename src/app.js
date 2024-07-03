@@ -25,6 +25,16 @@ app.use(compression()); // reduce size of response
 // );
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
+
+// ---------------------Test publish subscribe REDIS---------------------
+// const call_purchaseProduct_test = require("./test/subscribe.product.test"); // gọi publish
+// call_purchaseProduct_test.purchaseProduct({
+//   productId: "6652b698de3bc2c7d3191425",
+//   quantity: 10
+// });
+// require("./test/subscribe.inventory.test"); // subscriber sẽ lắng nghe và hanlde update inventory
+// ---------------------Test publish subscribe REDIS---------------------
+
 // init DB
 require("./dbs/init.mongodb");
 const { checkOverload } = require("./helpers/check.connect");

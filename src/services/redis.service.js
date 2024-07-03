@@ -5,7 +5,11 @@ const { promisify } = require("util"); // chuyển đổi hàm thành async/awai
 const {
   reservationInventory
 } = require("../models/repositories/inventory.repo");
-const redisClient = redis.createClient();
+// const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+  host: "172.17.0.2",
+  port: 6379
+});
 
 const pexpire = promisify(redisClient.pExpire).bind(redisClient);
 const setnxAsync = promisify(redisClient.setNX).bind(redisClient);
